@@ -2,15 +2,18 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { Database } from "@/lib/database.types";
 
 const getAllLessons = async () => {
-  const supabase = createServerComponentClient({ cookies });
-  const { data: lessons} = await supabase.from("lesson").select("*");
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({ 
+    cookies: () => cookieStore
+  });
+  
+  const { data: lessons } = await supabase.from("lesson").select("*");
   // console.log(lessons);
   return lessons;
 }
-
 export default async function Home() {
   const lessons = await getAllLessons();
 
@@ -40,3 +43,4 @@ export default async function Home() {
     </div>
   );
 }
+
