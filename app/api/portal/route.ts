@@ -1,29 +1,31 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-export async function GET(request: NextRequest, {params}: {params: Promise<{priceid: string}>}) {
-    
-    const supabase = createRouteHandlerClient({cookies});
-
-    const {data} = await supabase.auth.getUser();
-    const user = data.user;
+export async function GET() {
+    const supabase = createRouteHandlerClient({ cookies });
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        return NextResponse.json({error: "Unauthorized"}, {status: 401});
+        return NextResponse.json(
+            { error: "認証されていません" },
+            { status: 401 }
+        );
     }
 
-    const {data: stripe_customer_data} = await supabase.from("profile").select("stripe_customer").eq("id", user?.id).single();
+    const { data: profile } = await supabase
+        .from("profile")
+        .select("stripe_customer")
+        .eq("id", user.id)
+        .single();
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
     const session = await stripe.billingPortal.sessions.create({
-        customer: stripe_customer_data?.stripe_customer,
-        return_url: "http://localhost:3000/dashboard",
-    })
+        customer: profile?.stripe_customer as string,
+        return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`,
+    });
 
-    return NextResponse.json({
-        url: session.url,
-    })
+    return NextResponse.json({ url: session.url });
 }

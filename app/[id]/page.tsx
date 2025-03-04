@@ -7,13 +7,14 @@ import { extractYouTubeVideoId } from '@/utils/extractYoutubeVideoId';
 
 const getDetailLessons = async (id: number, supabase: SupabaseClient<Database>) => {
     const { data: lessons} = await supabase.from("lesson").select("*").eq("id", id).single();
-    // console.log(lessons);        
+   
     return lessons;
 }
 
 const getPremiumContent = async (id: number, supabase: SupabaseClient<Database>) => {
+
   const { data: video} = await supabase.from("premium_content").select("video_url").eq("id", id).single();
-  // console.log(lessons);     
+
   return video;
 }
   
@@ -30,7 +31,6 @@ const LessonDetailPage = async ({ params }: { params: Promise<{ id: string }> })
   ])
 
   const videoId = extractYouTubeVideoId(video?.video_url as string) as string
-
   return (
     <div className='max-w-3xl mx-auto my-16 px-2 space-y-4'>
         <h1 className='text-2xl font-bold'>{lesson?.title}</h1>
