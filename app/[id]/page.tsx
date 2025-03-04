@@ -23,10 +23,12 @@ const LessonDetailPage = async ({ params }: { params: Promise<{ id: string }> })
   const supabase = createServerComponentClient<Database>({ cookies: () => cookieStore });
 
   const {id} = await params;
-  
-  // paramsはすでにawaitされているので、直接使用可能
-  const lesson = await getDetailLessons(Number(id), supabase)
-  const video = await getPremiumContent(Number(id), supabase)
+
+  const [lesson, video] = await Promise.all([
+    await getDetailLessons(Number(id), supabase),
+    await getPremiumContent(Number(id), supabase)
+  ])
+
   const videoId = extractYouTubeVideoId(video?.video_url as string) as string
 
   return (
