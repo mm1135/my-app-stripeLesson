@@ -7,6 +7,7 @@ import { cookies } from 'next/headers'
 import { Database } from '@/lib/database.types'
 import SubscriptionButton from '@/components/checkout/SubscriptionButton'
 import AuthServerButton from '@/components/auth/AuthServerButton'
+import Link from 'next/link'
 
 // 価格情報を含む商品データの型定義
 type PlanWithPrice = {
@@ -82,8 +83,6 @@ const PricingPage = async () => {
         await getProfile(supabase)
     ]);
 
-    console.log(profile);
-
     const showSubscribeButton = !!user.session && !profile?.is_subscribed;
 
     const showCreateAccountButton = !user.session;
@@ -111,7 +110,9 @@ const PricingPage = async () => {
             <CardFooter>
                 {showSubscribeButton && <SubscriptionButton planId={plan.priceId}/>}
                 {showCreateAccountButton && <AuthServerButton />}
-                {showManageSubscriptionButton && <Button className='w-full'>サブスクリプションを管理する</Button>}
+                {showManageSubscriptionButton && <Button className='w-full'>
+                  <Link href="/dashboard">サブスクリプションを管理する</Link>
+                </Button>}
             </CardFooter>
           </Card>
         ))}

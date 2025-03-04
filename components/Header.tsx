@@ -2,8 +2,13 @@ import Link from 'next/link'
 import React from 'react'
 import { Button } from './ui/button'
 import AuthServerButton from './auth/AuthServerButton'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
-function Header() {
+const Header = async () => {
+    const supabase = createServerComponentClient({cookies});
+    const { data: { session } } = await supabase.auth.getSession();
+
     return (
         <div className="flex py-4 px-6 border-b border-gray-200">
             <Link href="/">
@@ -11,6 +16,13 @@ function Header() {
                 ホーム
                 </Button>
             </Link>
+            {session && (
+                <Link href="/dashboard" className='ml-4'>
+                    <Button variant="outline">
+                    ダッシュボード
+                    </Button>
+                </Link>
+            )}
             <Link href="/pricing" className='ml-4'>
                 <Button variant="outline">
                 価格
