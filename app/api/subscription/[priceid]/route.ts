@@ -30,8 +30,8 @@ export async function GET(request: NextRequest, {params}: {params: Promise<{pric
                 quantity: 1
             }
         ],
-        success_url: "http://localhost:3000/payment/success",
-        cancel_url: "http://localhost:3000/payment/canceled",
+        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/canceled`,
     })
     return NextResponse.json({
         id: session.id,
